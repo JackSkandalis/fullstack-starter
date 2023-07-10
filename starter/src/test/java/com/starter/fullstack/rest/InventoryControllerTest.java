@@ -80,6 +80,7 @@ public class InventoryControllerTest {
         inventory2.setProductType("SOME TYPE");
 
         this.mockMvc.perform(post("/inventory")
+            .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON)
             .content(this.objectMapper.writeValueAsString(inventory2)))
             .andExpect(status().isOk());
@@ -87,4 +88,19 @@ public class InventoryControllerTest {
         List<Inventory> allInventory = inventoryDAO.findAll();    
         Assert.assertEquals(2, allInventory.size());
     }
+
+    /**
+   * Test delete endpoint.
+   * @throws Throwable see MockMvc
+   */
+  @Test
+  public void remove() throws Throwable {
+    this.mockMvc.perform(delete("/inventory")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(this.inventoryDAO.findAll().get(0).getId()))
+        .andExpect(status().isOk());
+    
+    Assert.assertEquals(0, this.inventoryDAO.findAll().size());
+  }
 }
