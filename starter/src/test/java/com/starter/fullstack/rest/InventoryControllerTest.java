@@ -2,9 +2,7 @@ package com.starter.fullstack.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.starter.fullstack.api.Inventory;
-import com.starter.fullstack.api.Product;
 import com.starter.fullstack.dao.InventoryDAO;
-
 import java.util.List;
 import org.junit.After;
 import org.junit.Assert;
@@ -41,55 +39,55 @@ public class InventoryControllerTest {
 
   private Inventory inventory;
 
-    @Before
-    public void setup() throws Throwable {
-        this.inventory = new Inventory();
-        this.inventory.setId("ID");
-        this.inventory.setName("TEST");
-        // Sets the Mongo ID for us
-        this.inventoryDAO = new InventoryDAO(this.mongoTemplate);
-        this.inventory = this.inventoryDAO.create(this.inventory);
-    }
+  @Before
+  public void setup() throws Throwable {
+    this.inventory = new Inventory();
+    this.inventory.setId("ID");
+    this.inventory.setName("TEST");
+    // Sets the Mongo ID for us
+    this.inventoryDAO = new InventoryDAO(this.mongoTemplate);
+    this.inventory = this.inventoryDAO.create(this.inventory);
+  }
 
-    @After
-    public void teardown() {
-        this.mongoTemplate.dropCollection(Inventory.class);
-    }
+  @After
+  public void teardown() {
+    this.mongoTemplate.dropCollection(Inventory.class);
+  }
 
-    /**
-     * Test findAll endpoint.
-     * @throws Throwable see MockMvc
-     */
-    @Test
-    public void findAll() throws Throwable {
-        this.mockMvc.perform(get("/inventory")
-        .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().json("[" + this.objectMapper.writeValueAsString(inventory) + "]"));
-    }
+  /**
+   * Test findAll endpoint.
+   * @throws Throwable see MockMvc
+   */
+  @Test
+  public void findAll() throws Throwable {
+    this.mockMvc.perform(get("/inventory")
+    .accept(MediaType.APPLICATION_JSON))
+    .andExpect(status().isOk())
+      .andExpect(content().json("[" + this.objectMapper.writeValueAsString(inventory) + "]"));
+  }
 
-    /**
-     * Test create endpoint.
-     * @throws Throwable see MockMvc
-     */
-    @Test
-    public void create() throws Throwable {
-        Inventory inventory2 = new Inventory();
-        inventory2.setId("SOME ID");
-        inventory2.setName("TEST INVENTORY");
-        inventory2.setProductType("SOME TYPE");
+  /**
+   * Test create endpoint.
+   * @throws Throwable see MockMvc
+   */
+  @Test
+  public void create() throws Throwable {
+    Inventory inventory2 = new Inventory();
+    inventory2.setId("SOME ID");
+    inventory2.setName("TEST INVENTORY");
+    inventory2.setProductType("SOME TYPE");
 
-        this.mockMvc.perform(post("/inventory")
-            .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(this.objectMapper.writeValueAsString(inventory2)))
-            .andExpect(status().isOk());
+    this.mockMvc.perform(post("/inventory")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(this.objectMapper.writeValueAsString(inventory2)))
+        .andExpect(status().isOk());
 
-        List<Inventory> allInventory = inventoryDAO.findAll();    
-        Assert.assertEquals(2, allInventory.size());
-    }
+    List<Inventory> allInventory = inventoryDAO.findAll();    
+    Assert.assertEquals(2, allInventory.size());
+  }
 
-    /**
+  /**
    * Test delete endpoint.
    * @throws Throwable see MockMvc
    */

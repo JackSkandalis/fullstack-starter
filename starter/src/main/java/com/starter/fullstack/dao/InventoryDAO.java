@@ -1,11 +1,9 @@
 package com.starter.fullstack.dao;
 
 import com.starter.fullstack.api.Inventory;
-
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
-
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -92,7 +90,9 @@ public class InventoryDAO {
           .set("neverExpires", inventory.isNeverExpires())
           .set("availableStores", inventory.getAvailableStores());
 
-    return Optional.ofNullable(mongoTemplate.findAndModify(query, update, new FindAndModifyOptions().returnNew(true), Inventory.class));
+    return Optional.ofNullable(mongoTemplate
+                              .findAndModify(query, update, 
+                              new FindAndModifyOptions().returnNew(true), Inventory.class));
   }
 
   /**
