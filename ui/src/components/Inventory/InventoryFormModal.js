@@ -109,7 +109,7 @@ class InventoryFormModal extends React.Component {
                       onChange={handleUnitToggle}
                     >
                       {Object.keys(MeasurementUnits).map((value) =>
-                        <MenuItem key={value} value={value}>
+                        <MenuItem key={value} value={MeasurementUnits[value].name}>
                           {MeasurementUnits[value].name}
                         </MenuItem>
                       )}

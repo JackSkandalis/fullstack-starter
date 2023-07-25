@@ -12,6 +12,15 @@ const actions = {
   INVENTORY_REFRESH: 'inventory/refresh'
 }
 
+const frontendToBackendMapping = {
+  'Cup(s)': 'CUP',
+  'Gallon(s)': 'GALLON',
+  'Ounce(s)': 'OUNCE',
+  'Pint(s)': 'PINT',
+  'Pound(s)': 'POUND',
+  'Quart(s)': 'QUART'
+}
+
 export let defaultState = {
   all: [],
   fetched: false,
@@ -24,33 +33,48 @@ export const findInventory = createAction(actions.INVENTORY_GET_ALL, () =>
 )
 
 export const createInventory = createAction(actions.INVENTORY_CREATE, (inventory) =>
-  (dispatch, getState, config) => axios
-    .post(`${config.restAPIUrl}/inventory`, inventory)
-    .then((suc) => {
-      const invs = []
-      getState().inventory.all.forEach(inv => {
-        if (inv.id !== suc.data.id) {
-          invs.push(inv)
-        }
+  (dispatch, getState, config) => {
+    const backendEnumValue = frontendToBackendMapping[inventory.unitOfMeasurement]
+
+    const inventoryWithBackendUnit = {
+      ...inventory,
+      unitOfMeasurement: backendEnumValue
+    }
+
+    return axios
+      .post(`${config.restAPIUrl}/inventory`, inventoryWithBackendUnit)
+      .then((suc) => {
+        const invs = []
+        getState().inventory.all.forEach(inv => {
+          if (inv.id !== suc.data.id) {
+            invs.push(inv)
+          }
+        })
+        invs.push(suc.data)
+        dispatch(refreshInventory(invs))
+        dispatch(openSuccess('Inventory successfully created!'))
       })
-      invs.push(suc.data)
-      dispatch(refreshInventory(invs))
-      dispatch(openSuccess('Inventory successfully created!'))
-    })
+  }
 )
 
 export const deleteInventory = createAction(actions.INVENTORY_DELETE, (ids) =>
-  (dispatch, getState, config) => axios
-    .delete(`${config.restAPIUrl}/inventory`, { data: ids })
-    .then((suc) => {
-      const invs = []
-      getState().inventory.all.forEach(inv => {
-        if (!ids.includes(inv.id)) {
-          invs.push(inv)
-        }
-      })
-      dispatch(refreshInventory(invs))
+  (dispatch, getState, config) => {
+    const deletePromises = []
+
+    ids.forEach((id) => {
+      const deletePromise = axios.delete(`${config.restAPIUrl}/inventory`, { data: id })
+      deletePromises.push(deletePromise)
     })
+
+    Promise.all(deletePromises)
+      .then(() => {
+        const invs = getState().inventory.all.filter((inv) => !ids.includes(inv.id))
+        dispatch(refreshInventory(invs))
+      })
+      .catch((error) => {
+        console.error('Error deleting inventory:', error)
+      })
+  }
 )
 
 export default handleActions({
