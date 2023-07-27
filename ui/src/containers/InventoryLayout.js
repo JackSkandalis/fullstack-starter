@@ -157,7 +157,6 @@ const InventoryLayout = (props) => {
     const day = parseInt(parts[1], 10)
     const dateObject = new Date(year, month, day)
     updatedInitialValues.bestBeforeDate = dateObject.toISOString().slice(0, 10)
-
     const newExpires = updatedInitialValues.neverExpires === 'Yes'
     updatedInitialValues.neverExpires = newExpires
     return updatedInitialValues

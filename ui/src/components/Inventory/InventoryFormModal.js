@@ -27,7 +27,11 @@ class InventoryFormModal extends React.Component {
       selectedProduct,
       selectedUnit
     } = this.props
-
+    const defaultInitialValues = {
+      unitOfMeasurement: '',
+      productType: ''
+    }
+    const mergedInitialValues = { ...defaultInitialValues, ...initialValues }
     return (
       <Dialog
         open={this.props.isDialogOpen}
@@ -82,6 +86,7 @@ class InventoryFormModal extends React.Component {
                       component={TextField}
                       select
                       value={selectedProduct}
+                      defaultValue={mergedInitialValues.productType}
                     >
                       {useSelector(state => state.products.all).map((value, index) =>
                         <MenuItem button onClick={handleProductToggle(value)} key={index} value={value.name}>
@@ -123,6 +128,7 @@ class InventoryFormModal extends React.Component {
                       component={TextField}
                       select
                       value={selectedUnit}
+                      defaultValue={mergedInitialValues.unitOfMeasurement}
                     >
                       {Object.keys(MeasurementUnits).map((value) =>
                         <MenuItem button onClick={handleUnitToggle} key={value} value={MeasurementUnits[value].name}>
