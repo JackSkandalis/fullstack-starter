@@ -119,6 +119,7 @@ const InventoryLayout = (props) => {
     setEditOpen(false)
     if (resetChecked) {
       setChecked([])
+      setSelected([])
     }
   }
   const [checked, setChecked] = React.useState([])
@@ -139,8 +140,27 @@ const InventoryLayout = (props) => {
     setSelectedProduct(value.name)
   }
   const [setSelectedUnit] = React.useState([])
-  const handleUnitToggle = (event) => () => {
+  const handleUnitToggle = (event) => {
     setSelectedUnit(event.target.value)
+  }
+
+  const getCurrentDateTime = () => {
+    const now = new Date()
+    return now.toISOString()
+  }
+
+  const createEditInitialValues = (selectedInv) => {
+    const updatedInitialValues = { ...selectedInv }
+    const parts = updatedInitialValues.bestBeforeDate.split('/')
+    const year = parseInt(parts[2], 10)
+    const month = parseInt(parts[0], 10) - 1
+    const day = parseInt(parts[1], 10)
+    const dateObject = new Date(year, month, day)
+    updatedInitialValues.bestBeforeDate = dateObject.toISOString().slice(0, 10)
+
+    const newExpires = updatedInitialValues.neverExpires === 'Yes'
+    updatedInitialValues.neverExpires = newExpires
+    return updatedInitialValues
   }
 
   return (
@@ -178,6 +198,7 @@ const InventoryLayout = (props) => {
                       tabIndex={-1}
                       key={inv.id}
                       selected={isItemSelected}
+                      onChange={handleToggle(inv)}
                     >
                       <TableCell padding='checkbox'>
                         <Checkbox checked={isItemSelected}/>
@@ -201,7 +222,23 @@ const InventoryLayout = (props) => {
           isDialogOpen={isCreateOpen}
           handleDialog={toggleModals}
           handleInventory={createInventory}
-          initialValues={{}}
+          initialValues={{
+            description: '',
+            averagePrice: 0,
+            amount: 0,
+            bestBeforeDate: getCurrentDateTime().slice(0, 10),
+            neverExpires: false
+          }}
+          handleProductToggle={handleProductToggle}
+          handleUnitToggle={handleUnitToggle}
+        />
+        <InventoryFormModal
+          title='Edit'
+          formName='inventoryEdit'
+          isDialogOpen={isEditOpen}
+          handleDialog={toggleModals}
+          handleInventory={createInventory}
+          initialValues={checked.map(check => createEditInitialValues(check))[0]}
           handleProductToggle={handleProductToggle}
           handleUnitToggle={handleUnitToggle}
         />
@@ -209,7 +246,7 @@ const InventoryLayout = (props) => {
           isDialogOpen={isDeleteOpen}
           handleDelete={deleteInventory}
           handleDialog={toggleModals}
-          initialValues={selected.map(selected => selected.id)}
+          initialValues={selected}
         />
       </Grid>
     </Grid>

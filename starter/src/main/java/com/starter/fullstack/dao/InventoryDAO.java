@@ -55,8 +55,7 @@ public class InventoryDAO {
    * @return Created/Updated Inventory.
    */
   public Inventory create(Inventory inventory) {
-    inventory.setId(null);
-    return this.mongoTemplate.insert(inventory);
+    return this.mongoTemplate.save(inventory);
   }
 
   /**

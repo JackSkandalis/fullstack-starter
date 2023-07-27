@@ -2,6 +2,7 @@ package com.starter.fullstack.rest;
 
 import com.starter.fullstack.api.Inventory;
 import com.starter.fullstack.dao.InventoryDAO;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
@@ -51,17 +52,19 @@ public class InventoryController {
 
   /**
    * Delete Inventory
-   * @param id Id
+   * @param ids Ids
    * @return Deleted Inventory
    */
   @DeleteMapping
-  public Inventory delete(@RequestBody String id) {
-    Optional<Inventory> deleted = this.inventoryDAO.delete(id);
-    if (deleted.isPresent()) {
-      return deleted.get();
-    } else {
-      return null;
+  public List<Inventory> delete(@RequestBody List<String> ids) {
+    List<Inventory> deletedInventories = new ArrayList<>();
+
+    for (String id : ids) {
+      Optional<Inventory> deleted = this.inventoryDAO.delete(id);
+      deleted.ifPresent(deletedInventories::add);
     }
+
+    return deletedInventories;
   }
 }
 

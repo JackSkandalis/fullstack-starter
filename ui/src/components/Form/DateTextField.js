@@ -26,6 +26,7 @@ const fieldToDateTextField = ({
     error: showError,
     helperText: showError ? fieldError : warning ?? helperText,
     disabled: disabled ?? isSubmitting,
+    onBlur: (event) => onBlur ?? fieldOnBlur(event ?? field.name),
     ...custom,
     ...field,
     ...props,

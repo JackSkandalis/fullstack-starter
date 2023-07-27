@@ -35,10 +35,11 @@ export const findInventory = createAction(actions.INVENTORY_GET_ALL, () =>
 export const createInventory = createAction(actions.INVENTORY_CREATE, (inventory) =>
   (dispatch, getState, config) => {
     const backendEnumValue = frontendToBackendMapping[inventory.unitOfMeasurement]
-
+    const fullTime = inventory.bestBeforeDate
     const inventoryWithBackendUnit = {
       ...inventory,
-      unitOfMeasurement: backendEnumValue
+      unitOfMeasurement: backendEnumValue,
+      bestBeforeDate: fullTime.trim() + 'T00:00:00.000Z'
     }
 
     return axios
@@ -52,29 +53,24 @@ export const createInventory = createAction(actions.INVENTORY_CREATE, (inventory
         })
         invs.push(suc.data)
         dispatch(refreshInventory(invs))
-        dispatch(openSuccess('Inventory successfully created!'))
+        dispatch(openSuccess('Inventory successfully saved!'))
       })
   }
 )
 
 export const deleteInventory = createAction(actions.INVENTORY_DELETE, (ids) =>
-  (dispatch, getState, config) => {
-    const deletePromises = []
-
-    ids.forEach((id) => {
-      const deletePromise = axios.delete(`${config.restAPIUrl}/inventory`, { data: id })
-      deletePromises.push(deletePromise)
+  (dispatch, getState, config) => axios
+    .delete(`${config.restAPIUrl}/inventory`, { data: ids })
+    .then((suc) => {
+      const invs = []
+      getState().inventory.all.forEach(inv => {
+        if (!ids.includes(inv.id)) {
+          invs.push(inv)
+        }
+      })
+      dispatch(refreshInventory(invs))
+      dispatch(openSuccess('Inventory successfully deleted!'))
     })
-
-    Promise.all(deletePromises)
-      .then(() => {
-        const invs = getState().inventory.all.filter((inv) => !ids.includes(inv.id))
-        dispatch(refreshInventory(invs))
-      })
-      .catch((error) => {
-        console.error('Error deleting inventory:', error)
-      })
-  }
 )
 
 export default handleActions({

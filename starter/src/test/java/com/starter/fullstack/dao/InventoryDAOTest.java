@@ -57,12 +57,15 @@ public class InventoryDAOTest {
   @Test
   public void create() {
     Inventory inventory = new Inventory();
+    Inventory inventory2 = new Inventory();
     inventory.setName(NAME);
     inventory.setProductType(PRODUCT_TYPE);
+    inventory2.setName("Spencer");
+    inventory2.setProductType(PRODUCT_TYPE);
     this.inventoryDAO.create(inventory);
-    this.inventoryDAO.create(inventory);
+    this.inventoryDAO.create(inventory2);
     List<Inventory> actualInventory = this.inventoryDAO.findAll();
-    Assert.assertTrue(actualInventory.size() == 2);
+    Assert.assertEquals(2, actualInventory.size());
   }
 
   @Test

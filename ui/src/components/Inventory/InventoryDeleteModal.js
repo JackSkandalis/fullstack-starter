@@ -19,7 +19,7 @@ class InventoryDeleteModal extends React.Component {
     return (
       <Dialog
         open={isDialogOpen}
-        onClose={() => { handleDialog(false) }}
+        onClose={() => { handleDialog(true) }}
       >
         <Formik
           initialValues={initialValues}
@@ -40,7 +40,7 @@ class InventoryDeleteModal extends React.Component {
                 </Grid>
               </DialogContent>
               <DialogActions>
-                <Button onClick={() => { handleDialog(false) }} color='secondary'>No</Button>
+                <Button onClick={() => { handleDialog(true) }} color='secondary'>No</Button>
                 <Button disableElevation variant='contained' type='submit' form='deleteInventory' color='secondary'>
                   Yes
                 </Button>

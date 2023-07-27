@@ -4,6 +4,7 @@ import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
+import { ErrorMessage } from 'formik'
 import Grid from '@material-ui/core/Grid'
 import { MeasurementUnits } from '../../constants/units'
 import NumberTextField from '../Form/NumberTextField'
@@ -26,18 +27,32 @@ class InventoryFormModal extends React.Component {
       selectedProduct,
       selectedUnit
     } = this.props
+
     return (
       <Dialog
         open={this.props.isDialogOpen}
         maxWidth='sm'
         fullWidth={true}
-        onClose={() => { handleDialog(false) }}
+        onClose={() => { handleDialog(true) }}
       >
         <Formik
           initialValues={initialValues}
           onSubmit={values => {
             handleInventory(values)
             handleDialog(true)
+          }}
+          validate={(values) => {
+            const errors = {}
+            if (!values.name) {
+              errors.name = 'Name is required.'
+            }
+            if (!values.productType) {
+              errors.productType = 'Product Type is required.'
+            }
+            if (!values.unitOfMeasurement) {
+              errors.unitOfMeasurement = 'Unit of Measurement is required.'
+            }
+            return errors
           }}>
           {helpers =>
             <Form
@@ -57,6 +72,7 @@ class InventoryFormModal extends React.Component {
                       label='Name'
                       component={TextField}
                     />
+                    <ErrorMessage name='name' component='div' />
                   </Grid>
                   <Grid item xs={12} sm={12}>
                     <Field
@@ -73,6 +89,7 @@ class InventoryFormModal extends React.Component {
                         </MenuItem>
                       )}
                     </Field>
+                    <ErrorMessage name='productType' component='div' />
                   </Grid>
                   <Grid item xs={12} sm={12}>
                     <Field
@@ -106,14 +123,14 @@ class InventoryFormModal extends React.Component {
                       component={TextField}
                       select
                       value={selectedUnit}
-                      onChange={handleUnitToggle}
                     >
                       {Object.keys(MeasurementUnits).map((value) =>
-                        <MenuItem key={value} value={MeasurementUnits[value].name}>
+                        <MenuItem button onClick={handleUnitToggle} key={value} value={MeasurementUnits[value].name}>
                           {MeasurementUnits[value].name}
                         </MenuItem>
                       )}
                     </Field>
+                    <ErrorMessage name='unitOfMeasurement' component='div' />
                   </Grid>
                   <Grid item xs={12} sm={12}>
                     <Field
@@ -140,7 +157,7 @@ class InventoryFormModal extends React.Component {
                 </Grid>
               </DialogContent>
               <DialogActions>
-                <Button onClick={() => { handleDialog(false) }} color='secondary'>Cancel</Button>
+                <Button onClick={() => { handleDialog(true) }} color='secondary'>Cancel</Button>
                 <Button
                   disableElevation
                   variant='contained'

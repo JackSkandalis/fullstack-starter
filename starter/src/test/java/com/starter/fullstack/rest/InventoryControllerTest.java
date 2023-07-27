@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.starter.fullstack.api.Inventory;
 import com.starter.fullstack.dao.InventoryDAO;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -93,10 +94,15 @@ public class InventoryControllerTest {
    */
   @Test
   public void remove() throws Throwable {
+    List<Inventory> allInventoriesBeforeDeletion = this.inventoryDAO.findAll();
+    List<String> idsToDelete = allInventoriesBeforeDeletion.stream()
+            .map(Inventory::getId)
+            .collect(Collectors.toList());
+
     this.mockMvc.perform(delete("/inventory")
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
-        .content(this.inventoryDAO.findAll().get(0).getId()))
+        .content(new ObjectMapper().writeValueAsString(idsToDelete)))
         .andExpect(status().isOk());
     
     Assert.assertEquals(0, this.inventoryDAO.findAll().size());
