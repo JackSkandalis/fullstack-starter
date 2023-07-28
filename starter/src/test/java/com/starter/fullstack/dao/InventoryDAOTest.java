@@ -33,6 +33,7 @@ public class InventoryDAOTest {
 
   @Before
   public void setup() {
+    this.mongoTemplate.dropCollection(Inventory.class);
     this.inventoryDAO = new InventoryDAO(this.mongoTemplate);
   }
 

@@ -191,7 +191,10 @@ const InventoryLayout = (props) => {
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, inv.id)}
+                      onClick={(event) => {
+                        handleClick(event, inv.id)
+                        handleToggle(inv)
+                      }}
                       role='checkbox'
                       aria-checked={isItemSelected}
                       tabIndex={-1}

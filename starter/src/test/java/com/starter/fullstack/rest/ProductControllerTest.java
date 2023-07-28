@@ -38,6 +38,7 @@ public class ProductControllerTest {
 
   @Before
   public void setup() throws Throwable {
+    this.mongoTemplate.dropCollection(Product.class);
     this.product = new Product();
     this.product.setId("ID");
     this.product.setName("TEST");
